@@ -420,7 +420,11 @@ class BaseModel(Representation, metaclass=ModelMetaclass):
 
     def __setstate__(self, state: 'DictAny') -> None:
         object_setattr(self, '__dict__', state['__dict__'])
-        object_setattr(self, '__fields_set__', state['__fields_set__'])
+        v2__fields_set__ = getattr(self, '__pydantic_fields_set__', {})
+        if v2__fields_set__:
+            object_setattr(self, '__fields_set__', v2__fields_set__)
+        else:
+            object_setattr(self, '__fields_set__', state['__fields_set__'])
         for name, value in state.get('__private_attribute_values__', {}).items():
             object_setattr(self, name, value)
 
